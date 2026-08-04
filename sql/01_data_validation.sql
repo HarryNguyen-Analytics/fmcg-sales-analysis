@@ -108,3 +108,112 @@ The promotion flag contains only the expected values:
 - 0 = non-promoted
 - 1 = promoted
 */
+
+-- =========================================================
+-- TEST 5: PRODUCT HIERARCHY CONSISTENCY
+-- Each SKU should map to one brand, segment, category
+-- and pack type.
+-- =========================================================
+
+select sku,
+  count(distinct brand) as brand_count,
+  count(distinct segment) AS segment_count,
+  count(distinct category) AS category_count,
+  count(distinct pack_type) AS pack_type_count
+from `fmcg_sales_analysis.raw_sales`
+group by sku
+having count(distinct(brand) > 1
+  or count(distinct segment) > 1
+  or count(distinct category) > 1
+  or count(distinct pack_type) > 1
+order by sku
+
+/*
+Result:
+Each sku will belong unique brand - category - pack_type
+*/
+  
+-- =========================================================
+-- TEST 6: EXACT DUPLICATE ROWS
+-- Checks whether completely identical records appear
+-- more than once.
+-- =========================================================
+select *, count(*) AS duplicate_count
+FROM `fmcg_sales_analysis.raw_sales`
+GROUP BY ALL
+HAVING COUNT(*) > 1
+ORDER BY duplicate_count DESC
+LIMIT 20;
+
+/*
+Result:
+There is no data to display. Because no dulicated data in dataset
+*/
+
+-- =========================================================
+-- TEST 7: SEGMENT TO CATEGORY CONSISTENCY
+-- Each segment should belong to one category.
+-- =========================================================
+select segment, count(distinct category) as ctg_count
+from `fmcg_sales_analysis.raw_sales`
+group by segment
+having count(distinct category) > 1
+order by ctg_count desc;
+
+
+/*
+Result:
+There is no data to display because each sku is belonged to unique category
+*/
+
+
+-- =========================================================
+-- TEST 8: PROMOTION DISTRIBUTION
+-- Review the proportion of promoted and non-promoted rows.
+-- =========================================================
+select
+    promotion_flag,
+    count(*) AS total_rows,
+    round(
+          100 * count(*) / sum(count(*)) OVER (),
+        2
+    ) as row_percentage
+from `fmcg_sales_analysis.raw_sales`
+group by promotion_flag
+ by promotion_flag;
+
+/* Result:
+  The propotion of promoted and non-promoted are displayed with proper percentage
+*/
+
+-- =========================================================
+-- TEST 9: NUMERICAL RANGES
+-- Review minimum and maximum values for key measures.
+-- =========================================================
+
+select
+    min(price_unit) AS min_price_unit,
+    max(price_unit) AS max_price_unit,
+    min(delivery_days) AS min_delivery_days,
+    max(delivery_days) AS max_delivery_days,
+    min(stock_available) AS min_stock_available,
+    max(stock_available) AS max_stock_available,
+    min(delivered_qty) AS min_delivered_qty,
+    max(delivered_qty) AS max_delivered_qty,
+    min(units_sold) AS min_units_sold,
+    max(units_sold) AS max_units_sold
+from `fmcg_sales_analysis.raw_sales`;
+
+
+-- =========================================================
+-- TEST 10: ZERO VALUES
+-- Zero values are not automatically errors, but should
+-- be quantified before analysis.
+-- =========================================================
+
+select
+    countif(units_sold = 0) AS zero_units_sold,
+    countif(stock_available = 0) AS zero_stock_available,
+    countif(delivered_qty = 0) AS zero_delivered_qty,
+    countif(delivery_days = 0) AS zero_delivery_days
+from `fmcg_sales_analysis.raw_sales`;
