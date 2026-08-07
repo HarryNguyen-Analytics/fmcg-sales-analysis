@@ -217,3 +217,65 @@ select
     countif(delivered_qty = 0) AS zero_delivered_qty,
     countif(delivery_days = 0) AS zero_delivery_days
 from `fmcg_sales_analysis.raw_sales`;
+
+-- =========================================================
+-- TEST 11: DATE CONTINUITY
+-- Compare observed dates against the full calendar range.
+-- =========================================================
+select 
+  count(distinct date) as distinct_dates,
+  date_diff(max(date), min(date), day) + 1 as expected_calendar,
+  date_diff(max(date),min(date), day) + 1 - count(distinct date) as missing_date
+from `fmcg_sales_analysis.raw_sales`;
+
+/*Result:
+  The final result of distinct_date should be equaled to expected_date. If the distinct_date < expteced_date then missing_date = expected - actual
+*/
+
+-- =========================================================
+-- TEST 12: YEARLY DATA COVERAGE
+-- Confirm coverage and record volume for each year.
+-- =========================================================
+select
+  extract(year from date) as sales_year
+  min(date) as first_date, max(date) as last_date,
+  count(distinct date) as active_dates,
+  count(*) as total_rows,
+from `fmcg_sales_analysis.raw_sales`
+group by sales_year
+order by sales_year acs ;
+/*Result:
+Each year with start_date - last_date - active date between start and last and their rows
+*/
+
+
+-- =========================================================
+-- TEST 13: PRODUCT PORTFOLIO BY YEAR
+-- Identify changes in SKU and brand coverage.
+-- =========================================================
+select 
+  extract(year from date) as sales_year,
+  count(distinct sku) as total_sku,
+  count(distinct brand) as total_brand,
+  count(distinct segment) as total_segment,
+  count(distinct category) as total_category,
+from `fmcg_sales_analysis.raw_sales`
+group by sales_year,
+order by sales_year asc;
+
+
+-- =========================================================
+-- TEST 14: SKU MARKET COVERAGE
+-- Identify products not represented across all channels
+-- or all regions.
+-- =========================================================
+select 
+  sku,
+  count(distinct channel) as channel_count
+  count(distinct region) as region_count
+from `fmcg_sales_analysis.raw_sales`
+group by sku
+having count(distinct channel) < 3 or count(distinct region) < 3
+order by channel_count, region_count, sku
+
+/* Result: All SKUs are distributed across all 3 channels and 3 regions. */
