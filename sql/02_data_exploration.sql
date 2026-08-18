@@ -108,3 +108,35 @@ The product portfolio expanded during the first half of 2023 and remained stable
 Note:
 MIN(date) represents the first observed date in the dataset. However, it can be seen as product release date.
 */
+
+
+-- =========================================================
+-- EXPLORATION 4: PROMOTION RECORD DISTRIBUTION
+-- Understand the distribution of promoted and
+-- non-promoted observations in the dataset.
+-- =========================================================
+select promotion_flag,
+count(*) as total_rows,
+round(100 * count(*)/ sum(count(*)) over () ,0) as grand_total
+from `fmcg_sales_analysis.raw_sales`
+group by promotion_flag
+order by promotion_flag asc;
+/*
+Result:
+- Non-promoted observations represent 85.08% of the dataset
+  with 162,296 records.
+- Promoted observations represent 14.92%
+  with 28,461 records.
+- Promotion exposure is therefore relatively limited compared
+  with non-promotional observations.
+
+Interpretation:
+Most observations were recorded without promotion.
+This provides a substantially larger non-promoted comparison
+group for later promotion performance analysis.
+
+Note:
+This analysis describes promotion distribution only.
+It does not measure whether promotions increased sales.
+*/
+
