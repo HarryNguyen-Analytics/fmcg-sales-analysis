@@ -67,7 +67,13 @@ order by sm.category, rank_sku;
 -- MI-026 ranked first within Milk, RE-004 led ReadyMeal, SN-010 led SnackBar, and JU-021 was the only SKU within Juice. 
 -- Category-level ranking highlights the strongest individual products within each product group rather than comparing all SKUs against one another.
 
--- Product Analysis 5 — Which newly introduced SKUs generated the most revenue?
+-- Product Analysis 5 - Which SKUs introduced during the 2023 portfolio expansion generated the most revenue?
+-- Business Context:
+-- The dataset shows 20 active SKUs in 2022, increasing to 30 in 2023.
+-- The portfolio remained unchanged at 30 SKUs in 2024.
+-- Therefore, 2023 is the only observed expansion period, with 10 new SKUs
+-- entering the portfolio. This analysis evaluates the performance of those
+-- newly introduced products.
 select
     category,
     sku,
