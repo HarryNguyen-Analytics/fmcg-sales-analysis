@@ -137,3 +137,28 @@ from delivery_summary ds
 -- Promotion & Inventory Analysis 5
 -- Which product categories show the highest potential stock pressure?
 -- ===================================================================================
+select 
+  category,
+  count(*) total_record,
+  sum(
+  case
+    when stock_available < units_sold then 1
+    else 0
+    end) as stock_presure,
+
+  round(
+    sum(
+    case
+      when stock_available < units_sold then 1
+      else 0
+      end)/count(*)*100,2) as stock_pressure_pct
+  
+from `fmcg_sales_analysis.raw_sales`
+where units_sold >= 0 and stock_available >=0 -- Where I try to detect more negative values. Those numbers need to be positive to match with the condt stock < sold
+group by category
+order by stock_pressure_pct desc;
+--UPDATE-- 
+-- Result:
+-- After excluding three anomalous records with negative units_sold and stock_available values, no remaining sales records showed units_sold exceeding stock_available.
+-- Based on this definition, the dataset provides no evidence of category-level stock pressure.
+
