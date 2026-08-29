@@ -100,14 +100,28 @@ select
   countif(promotion_flag not in (0, 1)) as invalid_promotion_flag
 from `fmcg_sales_analysis.raw_sales`;
 
+--UPDATE!!!!! Review records containing negative sales or stock values !!!!!
+select 
+    date,
+    category,
+    sku,
+    channel,
+    regions
+    units_sold,
+    stock_available
+from `fmcg_sales_analysis.raw_sales`
+where units_sold < 0 or stock_available < 0 
+order by date;
 /*
-Result:
-No invalid values were identified in the tested numerical fields.
-
-The promotion flag contains only the expected values:
-- 0 = non-promoted
-- 1 = promoted
+2023-07-26 | SnackBar | SN-028 | Discount | PL-South   | units_sold -3  | stock -2
+2023-09-21 | SnackBar | SN-010 | Retail   | PL-Central | units_sold -25 | stock -12
+2024-03-14 | ReadyMeal| RE-007 | Discount | PL-Central | units_sold -8  | stock -6
 */
+-- Result:
+-- Three records contained negative values in both units_sold and stock_available.
+-- Because the dataset does not provide sufficient information to determine whether these values represent returns, inventory adjustments, or data-entry issues
+-- they were flagged as anomalies and excluded from inventory-pressure analysis.
+
 
 -- =========================================================
 -- TEST 5: PRODUCT HIERARCHY CONSISTENCY
