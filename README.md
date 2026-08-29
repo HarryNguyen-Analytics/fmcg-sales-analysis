@@ -107,3 +107,15 @@ fmcg-sales-analysis/
 ├── results/
 │   └── key_findings.md
 └── images/
+
+### Category Revenue Contribution
+![Category Revenue Contribution](images/Category%20Revenue%20Contribution.png)
+
+### Promotion Performance
+![Promotion Performance](images/Promotion%20Performance.png)
+
+### Stock-to-Sales Ratio
+![Stock-to-Sales Ratio](images/Stock-to-Ratio.png)
+
+### Top SKU Revenue Ranking
+![Top SKU Revenue Ranking](images/Top%20SKU%20Ranking.png)
