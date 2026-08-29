@@ -7,17 +7,23 @@
 -- How does sales performance differ between promoted
 -- and non-promoted sales?
 -- =========================================================
-
+with promotion_sales_summary as (
 select
     promotion_flag,
-    couint(*) as total_records,
+    count(*) as total_records,
     sum(units_sold) as total_sold,
     round(sum(price_unit * units_sold), 2) as total_revenue,
     round(avg(units_sold), 2) as avg_units_sold,
     round(avg(price_unit * units_sold), 2) as avg_revenue_per_record
 from `fmcg_sales_analysis.raw_sales`
-group by promotion_flag
-order by promotion_flag;
+group by promotion_flag) 
+
+select *,
+    round(ps.total_records / sum(ps.total_records) OVER () * 100, 2) as record_share_pct,
+    round(
+        ps.total_revenue / sum(ps.total_revenue) OVER () * 100,2) AS revenue_share_pct
+from promotion_sales_summary ps
+order by  ps.promotion_flag;
 -- 
 /* What I found:
 1. Why is non-promotion total revenue higher?
