@@ -35,10 +35,7 @@ See [`data/data_dictionary.md`](data/data_dictionary.md) for field definitions a
 ## Tools
 
 - Google BigQuery
-- GoogleSQL
-- GitHub
-
-SQL techniques used include:
+- SQL techniques used include:
 
 - Aggregation with `SUM`, `AVG`, `COUNT` and `COUNT(DISTINCT)`
 - Conditional aggregation with `CASE WHEN`
